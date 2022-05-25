@@ -8,3 +8,5 @@ const auth = (middlewareParams) => (req, res, next) => {
 
 
 module.exports = auth;
+
+// higher order function () => () => {}
