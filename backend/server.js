@@ -17,6 +17,8 @@ app.use(express.json());
 app.use(logger);
 // app.use(logger, auth) - így is lehetne..
 
+// todo: mongoose.connect
+
 app.get("/", (req, res) => {
   res.send("Hello World! 👋🌎");
 });

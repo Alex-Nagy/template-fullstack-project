@@ -12,9 +12,9 @@ const dashboardSchema = new mongoose.Schema({
 })
 
 const userSchema = new mongoose.Schema({
-    username: {type: String, unique: true, required: true}, //empty string works?
-    email: {type: String, unique: true, required: true}, // no empty string & validation
-    password: {type: String, required: true}, // no empty string & validation
+    username: {type: String, unique: true, required: true}, // ! unique? empty string works?
+    googleId: {type: String, unique: true, required: true}, // ! unique? no empty string & validation
+    // password: {type: String, required: true}, // no empty string & validation
     dashboards: [dashboardSchema] // empty list is default?
 })
 
