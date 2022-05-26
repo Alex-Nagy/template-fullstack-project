@@ -5,14 +5,18 @@
     "mongoose": "^6.3.4"
   },
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "jest"
   },
   "name": "backend",
   "version": "1.0.0",
   "main": "server.js",
   "devDependencies": {
     "dotenv": "^16.0.1",
-    "nodemon": "^2.0.16"
+    "jest": "^28.1.0",
+    "mongodb-memory-server": "^8.6.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
   },
   "author": "",
   "license": "ISC",
