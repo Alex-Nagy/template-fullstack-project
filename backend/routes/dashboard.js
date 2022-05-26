@@ -2,10 +2,10 @@ const router = require('express').Router()
 const auth = require('../middlewares/auth');
 const User = require('../model/user');
 
-router.get('/api/dashboards', auth({block: true}), async(req, res) => {
-    const user = User.findById(res.locals.userId)
+router.get('/', auth({block: true}), async(req, res) => {
+    // const user = await User.findById(res.locals.userId)
 
-    res.json({user})
+    res.status(200).json("user")
     // needs auth midware with block OK!
     // find user with userID form res.locals.userId
     // return user.dashboards
@@ -41,3 +41,5 @@ router.delete('/api/dashboards/:id', async(req, res) => {
 router.delete('/api/dashboards/:id/todos', async(req, res) => {
     // delete dashboard
 })
+
+module.exports = router
