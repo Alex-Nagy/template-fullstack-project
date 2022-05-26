@@ -8,7 +8,7 @@ router.post('/api/login', async(req, res) => {
 
 router.get('/', async(req, res) => {
     // try
-    res.status(418).json("hi👋")
+    res.status(418).json("test👋")
 })
 
 module.exports = router

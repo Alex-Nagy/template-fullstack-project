@@ -6,7 +6,7 @@ router.get('/', auth({block: true}), async(req, res) => {
     // const user = await User.findById(res.locals.userId)
 
     res.status(200).json("user")
-    // needs auth midware with block OK!
+    // DONE needs auth midware with block 
     // find user with userID form res.locals.userId
     // return user.dashboards
 
