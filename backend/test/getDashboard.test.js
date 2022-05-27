@@ -26,3 +26,4 @@ test("new user gets back an empty array", async () => {
   await connection.disconnect();
   await mongod.stop();
 });
+
