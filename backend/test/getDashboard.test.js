@@ -27,3 +27,14 @@ test("new user gets back an empty array", async () => {
   await mongod.stop();
 });
 
+test("Get's back 404 Not Found on /api/nope", async () => {
+  // given
+
+  // when
+  const server = mockserver(app)
+  const response = await server.get("/api/nope");
+
+  // then
+  expect(response.status).toBe(404);
+});
+
