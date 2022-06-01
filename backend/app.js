@@ -21,7 +21,7 @@ const dashboardRouter = require("./routes/dashboard");
 app.use("/api/dashboards", dashboardRouter);
 
 const userRouter = require("./routes/user");
-app.use("/api/login", userRouter);
+app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello World! 👋🌎");

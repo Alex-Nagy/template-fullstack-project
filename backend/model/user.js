@@ -12,8 +12,8 @@ const dashboardSchema = new mongoose.Schema({
 });
 
 const userSchema = new mongoose.Schema({
-  username: { type: String }, // ! unique? empty string works?
-  googleId: { type: String, unique: true }, // ! unique? no empty string & validation
+  username: { type: String }, //  unique? empty string works?
+  googleId: { type: String, unique: true }, //  unique? no empty string & validation
   providers: {
     google: { type: String, unique: true },
     facebook: { type: String, unique: true },
