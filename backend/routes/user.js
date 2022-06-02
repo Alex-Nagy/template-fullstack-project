@@ -11,7 +11,13 @@ const config = {
     client_secret: "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",
     redirect_uri: "http://localhost:3000/callback",
     token_endpoint: "https://oauth2.googleapis.com/token",
-    grant_type: "authorization_code",
+  },
+  github: {
+    client_id: "25bae038e73fd4c55ce9",
+    client_secret: "eabaa03ca00badbcb1211a9eb3ad12c5e613be7c",
+    redirect_uri: "http://localhost:3000/callback/github",
+    token_endpoint: "https://github.com/login/oauth/access_token",
+    user_endpoint: "https://api.github.com/user",
   },
   /* 
   facebook: {
@@ -40,20 +46,38 @@ router.post("/login", async (req, res) => {
     client_secret: config[provider].client_secret,
     redirect_uri: config[provider].redirect_uri,
     grant_type: "authorization_code",
-    scope: "openid",
   });
 
   if (!response) return res.sendStatus(500);
   if (response.status != 200) return res.sendStatus(401);
 
-  const decoded = jwt.decode(response.data.id_token);
+  let openId;
+  const onlyOauth = !response.data.id_token;
+  if (onlyOauth) {
+    let accesstoken = response.data.split("=")[1].split("&")[0] // csak az = utáni és a & előtti részt szedjuk ki, sufni megoldas
+    const userResponse = await http.post(
+      config[provider].user_endpoint,
+      {},
+      {
+        headers: {
+          authorization: "bearer " + accesstoken,
+        },
+      }
+    );
+    if (!response) return res.sendStatus(500);
+    if (response.status != 200) return res.sendStatus(401);
+    openId = userResponse.data.id;
+  } else {
+    const decoded = jwt.decode(response.data.id_token);
+    if (!decoded) return res.sendStatus(500);
+    openId = decoded.sub;
+  }
 
-  if (!decoded) return res.sendStatus(500);
-
+  // find user from db
   const key = "providers." + provider;
   const user = await User.findOneAndUpdate(
-    { [key]: decoded.sub },
-    { providers: { [provider]: decoded.sub } },
+    { [key]: openId },
+    { providers: { [provider]: openId } },
     { new: true, upsert: true }
   );
 

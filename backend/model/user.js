@@ -15,8 +15,9 @@ const userSchema = new mongoose.Schema({
   username: { type: String }, //  unique? empty string works?
   googleId: { type: String, unique: true }, //  unique? no empty string & validation
   providers: {
-    google: { type: String, unique: true },
-    facebook: { type: String, unique: true },
+    google: { type: String },
+    facebook: { type: String },
+    github: { type: String },
   },
   // password: {type: String, required: true}, // no empty string & validation
   dashboards: [dashboardSchema], // empty list is default?
