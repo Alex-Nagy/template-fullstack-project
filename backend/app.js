@@ -24,12 +24,12 @@ const userRouter = require("./routes/user");
 app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
-  res.send("Hello World! 👋🌎");
+  res.send("Hello World!👋🌎");
 });
 
 app.get("/api/public", (req, res) => {
   console.log("public");
-  res.send("Hello Public! 👋🌎");
+  res.send("Hello Public!👋");
 });
 
 app.get("/api/private", auth({ block: true }), (req, res) => {

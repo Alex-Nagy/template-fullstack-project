@@ -6,12 +6,14 @@ const jwt = require("jsonwebtoken");
 
 const config = {
   google: {
-    client_id: "423125049963-vnhlm59vvirdjsquu0efhqvq5u91orks.apps.googleusercontent.com",
+    client_id:
+      "423125049963-vnhlm59vvirdjsquu0efhqvq5u91orks.apps.googleusercontent.com",
     client_secret: "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",
     redirect_uri: "http://localhost:3000/callback",
     token_endpoint: "https://oauth2.googleapis.com/token",
+    grant_type: "authorization_code",
   },
-/* 
+  /* 
   facebook: {
     client_id: "", // or appId
     client_secret: "", // or appSecret
@@ -38,7 +40,7 @@ router.post("/login", async (req, res) => {
     client_secret: config[provider].client_secret,
     redirect_uri: config[provider].redirect_uri,
     grant_type: "authorization_code",
-    scope: "openid"
+    scope: "openid",
   });
 
   if (!response) return res.sendStatus(500);
@@ -52,7 +54,7 @@ router.post("/login", async (req, res) => {
   const user = await User.findOneAndUpdate(
     { [key]: decoded.sub },
     { providers: { [provider]: decoded.sub } },
-    { new: true }
+    { new: true, upsert: true }
   );
 
   const sessionToken = jwt.sign(
@@ -61,7 +63,7 @@ router.post("/login", async (req, res) => {
     { expiresIn: "1h" }
   );
 
-  res.json({sessionToken});
+  res.json({ sessionToken });
 
   /* 
   if (!user) {

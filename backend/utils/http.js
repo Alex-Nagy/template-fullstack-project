@@ -12,7 +12,7 @@ const http = (baseurl) => {
       const response = await instance.post(url, body);
       return response;
     } catch (err) {
-      console.log(err);
+      console.log(err.response);
       return err.response;
     }
   };
