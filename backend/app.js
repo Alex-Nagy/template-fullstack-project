@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(logger);
 // app.use(logger, auth) - így is lehetne..
 
-// todo: MongoDB connect - in server.js
+// todo: MongoDB connect -> Done in server.js
 
 const dashboardRouter = require("./routes/dashboard");
 app.use("/api/dashboards", dashboardRouter);
