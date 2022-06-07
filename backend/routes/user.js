@@ -3,6 +3,7 @@ const httpModule = require("../utils/http");
 const http = httpModule();
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
+const { json } = require("express");
 
 const config = {
   google: {
@@ -11,6 +12,8 @@ const config = {
     client_secret: "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",
     redirect_uri: "http://localhost:3000/callback",
     token_endpoint: "https://oauth2.googleapis.com/token",
+    user_endpoint: null,
+    user_id: null,
   },
   github: {
     client_id: "25bae038e73fd4c55ce9",
@@ -18,6 +21,7 @@ const config = {
     redirect_uri: "http://localhost:3000/callback/github",
     token_endpoint: "https://github.com/login/oauth/access_token",
     user_endpoint: "https://api.github.com/user",
+    user_id: "id",
   },
   /* 
   facebook: {
@@ -40,32 +44,42 @@ router.post("/login", async (req, res) => {
   if (!code || !provider) return res.sendStatus(400); // not enough data - should have code & provider
   if (!Object.keys(config).includes(provider)) return res.sendStatus(400); // if config{ doestn't have provider }
 
-  const response = await http.post(config[provider].token_endpoint, {
-    code: code,
-    client_id: config[provider].client_id,
-    client_secret: config[provider].client_secret,
-    redirect_uri: config[provider].redirect_uri,
-    grant_type: "authorization_code",
-  });
+  const response = await http.post(
+    config[provider].token_endpoint,
+    {
+      code: code,
+      client_id: config[provider].client_id,
+      client_secret: config[provider].client_secret,
+      redirect_uri: config[provider].redirect_uri,
+      grant_type: "authorization_code",
+    },
+    {
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
 
   if (!response) return res.sendStatus(500);
   if (response.status != 200) return res.sendStatus(401);
 
-  let openId;
+  let openId; // github doesnt have openId
   const onlyOauth = !response.data.id_token;
   if (onlyOauth) {
-    let accesstoken = response.data.split("=")[1].split("&")[0] // csak az = utáni és a & előtti részt szedjuk ki, sufni megoldas
+    // let accesstoken = response.data.split("=")[1].split("&")[0];               // csak az = utáni és a & előtti részt szedjuk ki, sufni megoldas
+    let accesstoken = response.data.access_token;
     const userResponse = await http.post(
       config[provider].user_endpoint,
       {},
       {
         headers: {
-          authorization: "bearer " + accesstoken,
+          authorization: "Bearer " + accesstoken,
         },
       }
     );
     if (!response) return res.sendStatus(500);
     if (response.status != 200) return res.sendStatus(401);
+    const id = config[provider].user_id;
     openId = userResponse.data.id;
   } else {
     const decoded = jwt.decode(response.data.id_token);
