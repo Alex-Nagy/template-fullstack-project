@@ -1,3 +1,5 @@
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const app = require("../app");
 const mockserver = require("supertest");
 const { MongoMemoryServer } = require("mongodb-memory-server");
@@ -7,28 +9,29 @@ const { startDB, stopDB, deleteAll } = require("./util/inMemoryDB");
 describe("/api/dashboards get tests", () => {
   let connection;
   let server;
-  let client
+  let client;
 
   beforeAll(async () => {
     const result = await startDB();
-    server = result[0]
-    connection = result[1]
-    client = mockserver.agent(app)
+    server = result[0];
+    connection = result[1];
+    client = mockserver.agent(app);
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     await deleteAll(User);
   });
 
-  afterAll(async() => {
+  afterAll(async () => {
     await stopDB(server, connection);
   });
 
   test("new user gets back an empty array", async () => {
     // given
-    const newUser = new User({ username: "Zildjian", googleId: 123 });
+    const newUser = new User({ username: "Zildjian" });
     await newUser.save();
-    client.set("authorization", newUser._id);
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
+    client.set("authorization", token);
 
     // when
     const response = await client.get("/api/dashboards");
@@ -41,15 +44,15 @@ describe("/api/dashboards get tests", () => {
 
   test("deleted user receives nothing", async () => {
     // given
-    const newUser = new User({ username: "Zildjian", googleId: 123 });
+    const newUser = new User({ username: "Zildjian" });
     await newUser.save();
-    client.set("authorization", newUser._id);
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
+    client.set("authorization", token);
     await User.deleteMany();
-    
-    
+
     // when
     const response = await client.get("/api/dashboards");
-    
+
     // then
     expect(response.status).toBe(200);
     const responseData = response.body;

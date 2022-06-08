@@ -1,8 +1,9 @@
+require("express-async-errors")
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const morgan = require('morgan')
 
-const logger = require("./middlewares/logger");
 const auth = require("./middlewares/auth");
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -12,7 +13,8 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(logger);
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+
 // app.use(logger, auth) - így is lehetne..
 
 // todo: MongoDB connect -> Done in server.js
@@ -34,12 +36,12 @@ app.get("/api/public", (req, res) => {
 
 app.get("/api/private", auth({ block: true }), (req, res) => {
   console.log("private");
-  res.send("Hello Private!👋" + res.locals.userId);
+  res.send("Hello Private!👋" + res.locals.user.userId);
 });
 
 app.get("/api/prublic", auth({ block: false }), (req, res) => {
-  if (!res.locals.userId) return res.send("hello world public");
-  res.send(`Hello prublic, your id is: ${res.locals.userId}`);
+  if (!res.locals.user) return res.send("hello world public");
+  res.send(`Hello prublic, your id is: ${res.locals.user.userId}`);
 });
 
 // errorHandler mindig utolsóként kell meghívni

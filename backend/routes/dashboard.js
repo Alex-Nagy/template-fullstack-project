@@ -3,7 +3,7 @@ const auth = require('../middlewares/auth');
 const User = require('../model/user');
 
 router.get('/', auth({block: true}), async(req, res) => {
-    const user = await User.findById(res.locals.userId)
+    const user = await User.findById(res.locals.user.userId)
 
     res.status(200).json({user})
     // DONE needs auth midware with block 
