@@ -1,30 +1,31 @@
-require("express-async-errors")
+require("express-async-errors");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const morgan = require('morgan')
+const morgan = require("morgan");
 
 const auth = require("./middlewares/auth");
 const errorHandler = require("./middlewares/errorHandler");
 
 app.use(
   cors({
-    origin: process.env.APP_URL,
+    origin: process.env.APP_URL, // frontend url
   })
 );
 app.use(express.json());
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
-
-// app.use(logger, auth) - így is lehetne..
-
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms") // nice logs bro
+);
+// app.use(logger, auth) - így is lehetne ezeket..
 // todo: MongoDB connect -> Done in server.js
 
+//_______Routes_______
 const dashboardRouter = require("./routes/dashboard");
 app.use("/api/dashboards", dashboardRouter);
 
 const userRouter = require("./routes/user");
 app.use("/api/user", userRouter);
-
+//___________________
 app.get("/", (req, res) => {
   res.send("Hello World!👋🌎");
 });
@@ -47,4 +48,4 @@ app.get("/api/prublic", auth({ block: false }), (req, res) => {
 // errorHandler mindig utolsóként kell meghívni
 app.use(errorHandler);
 
-module.exports = app
+module.exports = app;

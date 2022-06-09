@@ -5,7 +5,6 @@ const stream = createWriteStream({
   apiKey: process.env.LOGFLARE_API_KEY,
   sourceToken: process.env.LOGFLARE_SOURCE_ID,
 });
-
 // create pino-logflare browser stream
 const send = createPinoBrowserSend({
   apiKey: process.env.LOGFLARE_API_KEY,
@@ -22,6 +21,7 @@ const logger = pino(
     },
   },
   stream
-);
-
-module.exports = logger;
+  );
+  // * send error logs to https://logflare.app/sources/20781
+  
+  module.exports = logger;

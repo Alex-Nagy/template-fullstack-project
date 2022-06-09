@@ -3,7 +3,7 @@ const httpModule = require("../utils/http");
 const http = httpModule();
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
-const { json } = require("express");
+const auth = require("../middlewares/auth");
 
 const config = {
   google: {
@@ -34,7 +34,7 @@ const config = {
    */
 };
 
-router.post("/login", async (req, res) => {
+router.post("/login", auth({ block: false }), async (req, res) => {
   const payload = req.body;
   if (!payload) return res.sendStatus(400); // need a req body
 
@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
   let openId; // github doesnt have openId
   const onlyOauth = !response.data.id_token;
   if (onlyOauth) {
-    // let accesstoken = response.data.split("=")[1].split("&")[0];               // csak az = utáni és a & előtti részt szedjuk ki, sufni megoldas
+    // let accesstoken = response.data.split("=")[1].split("&")[0]; // csak az = utáni és a & előtti részt szedjuk ki
     let accesstoken = response.data.access_token;
     const userResponse = await http.post(
       config[provider].user_endpoint,
@@ -77,8 +77,8 @@ router.post("/login", async (req, res) => {
         },
       }
     );
-    if (!response) return res.sendStatus(500);
-    if (response.status != 200) return res.sendStatus(401);
+    if (!userResponse) return res.sendStatus(500);
+    if (userResponse.status != 200) return res.sendStatus(401);
     const id = config[provider].user_id;
     openId = userResponse.data.id;
   } else {
@@ -89,36 +89,54 @@ router.post("/login", async (req, res) => {
 
   // find user from db
   const key = "providers." + provider;
-  const user = await User.findOneAndUpdate(
+  const user = await User.findOne({ [key]: openId });
+
+  if (user && res.locals.user?.providers) {
+    user.providers = { ...user.providers, ...res.locals.user.providers };
+    user = await user.save()
+  }
+
+  // account merge előtt
+  /*   const user = await User.findOneAndUpdate(
     { [key]: openId },
     { providers: { [provider]: openId } },
     { new: true, upsert: true }
-  );
+  ); */
 
+  // optional chaining - user?.id - same as => user ? user.id : null
   const sessionToken = jwt.sign(
-    { userId: user.id, provider: user.providers },
+    {
+      userId: user?.id, // user.id from MongoDB == _id
+      provider: user ? user.providers : { [provider]: openId },
+    },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
 
   res.json({ sessionToken });
 
-  /* 
-  if (!user) {
-    await User.create({
-      providers: { [provider]: decoded.sub },
-    });
-  }
-
- */
   // recieve google code -> get google token -> get userID
   // googleId exists ? send jwt token : create user
-  /* 
-router.get("/", async (req, res) => {
-  // try
-  res.status(200).json("get all");
 });
- */
+
+// Create user
+router.post("/create", auth({ block: true }), async (req, res) => {
+  // res.locals.user elérhető itt
+  if (!req.body?.username) return res.sendStatus(400);
+  const user = await User.create({
+    username: req.body.username,
+    provider: res.locals.user.providers,
+  });
+
+  const sessionToken = jwt.sign(
+    {
+      userId: user.id, // user.id from MongoDB == _id
+      provider: user.providers,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  res.json({ sessionToken });
 });
 
 module.exports = router;
