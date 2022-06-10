@@ -10,10 +10,10 @@ const http = () => {
   const post = async (url, body, options) => {
     try {
       const response = await instance.post(url, body, options);
-      console.log("BODY:", response.data)
+      // console.log("BODY:", response.data)
       return response;
     } catch (err) {
-      console.log(err.response);
+      // console.log(err.response);
       return err.response;
     }
   };

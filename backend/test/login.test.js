@@ -5,7 +5,7 @@ const mockserver = require("supertest");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../model/user");
 const { startDB, stopDB, deleteAll } = require("./util/inMemoryDB");
-const { setupGoogleSuccessResponse } = require("../test/util/httpMock");
+const { setupGoogleSuccessResponse, setupGoogleErrorResponse } = require("../test/util/httpMock");
 
 describe("/api/user/login get tests", () => {
   let connection;
@@ -82,8 +82,8 @@ describe("/api/user/login get tests", () => {
     // given
     const code = "random";
     const provider = "google";
-
-    setupGoogleSuccessResponse('0123456789')
+    const googleUserId = "0123456789";
+    setupGoogleSuccessResponse(googleUserId);
 
     // when
     const response = await client.post("/api/user/login").send({
@@ -93,5 +93,31 @@ describe("/api/user/login get tests", () => {
 
     // then
     expect(response.status).toBe(200);
+    const responseToken = jwt.decode(response.body.sessionToken);
+    expect(responseToken.providers.google).toBe(googleUserId);
+    const users = await User.find();
+    expect(users).toStrictEqual([]);
+    // expect(users).toHaveLength(0);
+  });
+
+  test("return 401 with invalid code (user not created)", async () => {
+    // given
+    const code = "random";
+    const provider = "google";
+
+    setupGoogleErrorResponse();
+
+    // when
+    const response = await client.post("/api/user/login").send({
+      code,
+      provider,
+    });
+
+    // then
+    expect(response.status).toBe(401);
+    expect(response.body).toStrictEqual({});
+    const users = await User.find();
+    expect(users).toStrictEqual([]);
+    // expect(users).toHaveLength(0);
   });
 });
