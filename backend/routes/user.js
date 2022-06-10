@@ -1,6 +1,5 @@
 const User = require("../model/user");
-const httpModule = require("../utils/http");
-const http = httpModule();
+const http = require("../utils/http");
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const auth = require("../middlewares/auth");

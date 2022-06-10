@@ -5,6 +5,7 @@ const mockserver = require("supertest");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../model/user");
 const { startDB, stopDB, deleteAll } = require("./util/inMemoryDB");
+const { setupGoogleSuccessResponse } = require("../test/util/httpMock");
 
 describe("/api/user/login get tests", () => {
   let connection;
@@ -30,7 +31,7 @@ describe("/api/user/login get tests", () => {
     // given
 
     // when
-    const response = await client.post("/api/user/login").send({})
+    const response = await client.post("/api/user/login").send({});
 
     // then
     expect(response.status).toBe(400);
@@ -38,11 +39,11 @@ describe("/api/user/login get tests", () => {
 
   test("return 400 without provider (user not created)", async () => {
     // given
-    const code = "random"
+    const code = "random";
 
     // when
     const response = await client.post("/api/user/login").send({
-        code
+      code,
     });
 
     // then
@@ -51,11 +52,11 @@ describe("/api/user/login get tests", () => {
 
   test("return 400 without code data (user not created)", async () => {
     // given
-    const provider = "github"
+    const provider = "github";
 
     // when
     const response = await client.post("/api/user/login").send({
-        provider
+      provider,
     });
 
     // then
@@ -64,15 +65,33 @@ describe("/api/user/login get tests", () => {
 
   test("return 400 with invalid provider (user not created)", async () => {
     // given
-    const code = "random"
-    const provider = "twitter"
+    const code = "random";
+    const provider = "twitter";
 
     // when
     const response = await client.post("/api/user/login").send({
-        code, provider
+      code,
+      provider,
     });
 
     // then
     expect(response.status).toBe(400);
+  });
+
+  test("return 200 with JWT with valid provider (user not created)", async () => {
+    // given
+    const code = "random";
+    const provider = "google";
+
+    setupGoogleSuccessResponse('0123456789')
+
+    // when
+    const response = await client.post("/api/user/login").send({
+      code,
+      provider,
+    });
+
+    // then
+    expect(response.status).toBe(200);
   });
 });
