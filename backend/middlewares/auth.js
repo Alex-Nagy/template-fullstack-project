@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const auth = (middlewareParams) => (req, res, next) => {
   // console.log("Authenticating...");
-  const token = req.header("authorization");
+  const token = req.header("Authorization");
   jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
     if (error && middlewareParams.block) return res.sendStatus(401);
     res.locals.user = user;
