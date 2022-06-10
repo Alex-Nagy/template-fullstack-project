@@ -107,7 +107,7 @@ router.post("/login", auth({ block: false }), async (req, res) => {
   const sessionToken = jwt.sign(
     {
       userId: user?.id, // user.id from MongoDB == _id
-      provider: user ? user.providers : { [provider]: openId },
+      providers: user ? user.providers : { [provider]: openId },
     },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
@@ -125,13 +125,13 @@ router.post("/create", auth({ block: true }), async (req, res) => {
   if (!req.body?.username) return res.sendStatus(400);
   const user = await User.create({
     username: req.body.username,
-    provider: res.locals.user.providers,
+    providers: res.locals.user.providers,
   });
 
   const sessionToken = jwt.sign(
     {
       userId: user.id, // user.id from MongoDB == _id
-      provider: user.providers,
+      providers: user.providers,
     },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
