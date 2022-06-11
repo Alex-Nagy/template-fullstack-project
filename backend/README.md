@@ -16,5 +16,6 @@ Create a .env file in root with variables:
 
 ## Dev start
 
+cd backend
 1. npm install
 2. npm start
