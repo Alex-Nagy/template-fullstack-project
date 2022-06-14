@@ -4,15 +4,15 @@ const CounterContext = createContext();
 const CounterProvider = ({ children }) => {
   const [value, setValue] = useState(0);
 
-  const inc = () => {
+  const increment = () => {
     setValue(value + 1);
   };
 
-  const dec = () => {
+  const decrement = () => {
     setValue(value - 1);
   };
 
-  const contextValue = { value, inc, dec }
+  const contextValue = { value, increment, decrement }
   return (
     <CounterContext.Provider value={contextValue}>
       {children}
