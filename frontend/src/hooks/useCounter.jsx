@@ -1,7 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export const useCounter = () => {
+export const useCounter = (componentName) => {
   const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    localStorage.setItem("counter" + componentName, counter);
+  }, [counter]);
+
+  useEffect(() => {
+   const localCounter = parseInt(localStorage.getItem("counter" + componentName));
+   setCounter(localCounter || 0)
+  }, []);
 
   const increment = () => {
     setCounter(counter + 1);

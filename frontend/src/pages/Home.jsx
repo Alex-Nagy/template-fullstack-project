@@ -3,7 +3,7 @@ import { useCounter } from "../hooks/useCounter";
 import { useCounter as useGlobalCounter } from "../providers/counter";
 
 const Home = () => {
-  const { counter, increment, decrement } = useCounter();
+  const { counter, increment, decrement } = useCounter("Home");
   const { value, increment: goUp, decrement: goDown } = useGlobalCounter();
 
   return (
