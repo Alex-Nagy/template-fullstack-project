@@ -12,7 +12,7 @@ const CounterProvider = ({ children }) => {
     setValue(value - 1);
   };
 
-  const contextValue = { value, increment, decrement }
+  const contextValue = { value, increment, decrement };
   return (
     <CounterContext.Provider value={contextValue}>
       {children}
