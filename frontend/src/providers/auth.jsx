@@ -16,7 +16,7 @@ const AuthProvider = ({ children }) => {
     searchParams.append("scope", "openid");
     searchParams.append("redirect_uri", "http://localhost:3000/callback");
     searchParams.append("response_type", "code");
-    // searchParams.append("prompt", "select_account")
+    searchParams.append("prompt", "select_account") // have to select account to log in
 
     const fullUrl = googleBaseUrl + "?" + searchParams.toString();
     window.open(fullUrl);
