@@ -4,21 +4,19 @@ import { useNavigate } from "react-router-dom";
 
 const Callback = () => {
   const { login } = useAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const loginWithCode = async() => {
-        
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-    
-        if (code) {
-          await login(code, "google");
-        }
-        navigate("/")
-        
-    }
-    loginWithCode()
+    const loginWithCode = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+
+      if (code) {
+        await login(code, "google");
+      }
+      navigate("/profile");
+    };
+    loginWithCode();
 
     // eslint-disable-next-line
   }, []);
