@@ -14,7 +14,7 @@ Create a .env file in root with variables:
 - DB={ mongodb://localhost:27017/todo }
 - JWT_SECRET={ lakdLKJFDlienciJLBIlsihHISpxoy }
 
-## Dev start
+## Start
 
 1. npm install
 2. npm start
